@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chaperone — We introduce people worth meeting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Didact+Gothic&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink: #1C1510;
+  --ink-soft: #3D3028;
+  --gold: #9C7B4E;
+  --gold-light: #C4A06A;
+  --cream: #F7F2EA;
+  --parchment: #EDE4D6;
+  --warm-white: #FAF8F4;
+  --muted: #8C7B6B;
+  --rule: rgba(156, 123, 78, 0.25);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Didact Gothic', 'Helvetica Neue', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* === GRAIN OVERLAY === */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.4;
+}
+
+/* === NAV === */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  padding: 2rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  mix-blend-mode: multiply;
+}
+
+.nav-wordmark {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.nav-right {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* === HERO === */
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+}
+
+/* LEFT — Text */
+.hero-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8rem 5rem 6rem 8rem;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-left::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 15%;
+  bottom: 15%;
+  width: 1px;
+  background: var(--rule);
+}
+
+.eyebrow {
+  font-size: 0.6rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: fadeUp 1s ease 0.2s forwards;
+}
+
+.hero-headline {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(3.5rem, 5vw, 5.5rem);
+  font-weight: 300;
+  line-height: 1.05;
+  color: var(--ink);
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: fadeUp 1s ease 0.4s forwards;
+}
+
+.hero-headline em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.hero-body {
+  font-size: 0.85rem;
+  line-height: 2;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  max-width: 340px;
+  margin-bottom: 4rem;
+  opacity: 0;
+  animation: fadeUp 1s ease 0.6s forwards;
+}
+
+/* === PHONE INPUT === */
+.phone-form {
+  opacity: 0;
+  animation: fadeUp 1s ease 0.8s forwards;
+}
+
+.phone-label {
+  display: block;
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+
+.phone-row {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 0.75rem;
+  gap: 1rem;
+  max-width: 380px;
+}
+
+.phone-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--ink);
+  outline: none;
+  letter-spacing: 0.05em;
+}
+
+.phone-input::placeholder {
+  color: var(--parchment);
+}
+
+.phone-submit {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gold);
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  padding: 0;
+  transition: color 0.2s, transform 0.2s;
+  white-space: nowrap;
+  font-family: 'Didact Gothic', sans-serif;
+}
+
+.phone-submit:hover {
+  color: var(--ink);
+  transform: translateX(4px);
+}
+
+.phone-note {
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  margin-top: 1.25rem;
+  opacity: 0.7;
+}
+
+/* === HERO RIGHT — Illustration === */
+.hero-right {
+  position: relative;
+  overflow: hidden;
+  background: var(--parchment);
+}
+
+.hero-right::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 60% 40%, rgba(156,123,78,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 30% 70%, rgba(28,21,16,0.04) 0%, transparent 50%);
+}
+
+/* The AI-vision illustration — pure CSS */
+.vision-frame {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeIn 1.5s ease 1s forwards;
+}
+
+.vision-inner {
+  width: 72%;
+  max-width: 380px;
+  position: relative;
+}
+
+/* Decorative frame lines */
+.vision-inner::before,
+.vision-inner::after {
+  content: '';
+  position: absolute;
+  border: 1px solid rgba(156,123,78,0.2);
+}
+
+.vision-inner::before {
+  inset: -20px;
+  border-radius: 2px;
+}
+
+.vision-inner::after {
+  inset: -32px;
+  border-radius: 2px;
+  border-color: rgba(156,123,78,0.1);
+}
+
+/* The "couple" illustration — abstract SVG */
+.couple-svg {
+  width: 100%;
+  display: block;
+}
+
+/* Caption below illustration */
+.vision-caption {
+  text-align: center;
+  margin-top: 2.5rem;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  line-height: 1.7;
+}
+
+.vision-caption strong {
+  display: block;
+  font-style: normal;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+  font-family: 'Didact Gothic', sans-serif;
+  font-weight: 400;
+}
+
+/* === HOW IT WORKS === */
+.how {
+  padding: 10rem 8rem;
+  background: var(--warm-white);
+  position: relative;
+}
+
+.how::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 8rem; right: 8rem;
+  height: 1px;
+  background: var(--rule);
+}
+
+.section-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 4rem;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4rem;
+  position: relative;
+}
+
+/* Connecting line between steps */
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 1.5rem;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--rule);
+  z-index: 0;
+}
+
+.step {
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.step.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.step:nth-child(2) { transition-delay: 0.15s; }
+.step:nth-child(3) { transition-delay: 0.3s; }
+.step:nth-child(4) { transition-delay: 0.45s; }
+
+.step-number {
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  color: var(--gold);
+  margin-bottom: 2rem;
+  background: var(--warm-white);
+}
+
+.step-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+.step-body {
+  font-size: 0.75rem;
+  line-height: 1.9;
+  color: var(--muted);
+  letter-spacing: 0.03em;
+}
+
+/* === MANIFESTO === */
+.manifesto {
+  padding: 10rem 8rem;
+  background: var(--ink);
+  position: relative;
+  overflow: hidden;
+}
+
+.manifesto::before {
+  content: '';
+  position: absolute;
+  top: -200px;
+  right: -200px;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(156,123,78,0.06) 0%, transparent 70%);
+}
+
+.manifesto-quote {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(2rem, 3.5vw, 3.2rem);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--cream);
+  line-height: 1.5;
+  max-width: 780px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+.manifesto-quote.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.manifesto-quote em {
+  color: var(--gold-light);
+  font-style: normal;
+}
+
+.manifesto-attr {
+  margin-top: 3rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(156,123,78,0.5);
+  opacity: 0;
+  transition: opacity 1s ease 0.4s;
+}
+
+.manifesto-attr.visible { opacity: 1; }
+
+/* === DETAILS === */
+.details {
+  padding: 10rem 8rem;
+  background: var(--cream);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8rem;
+  align-items: start;
+}
+
+.details::before {
+  content: '';
+  position: absolute;
+}
+
+.details-left .section-label { margin-bottom: 2rem; }
+
+.details-headline {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 2.5rem;
+  font-weight: 300;
+  line-height: 1.2;
+  color: var(--ink);
+  margin-bottom: 2.5rem;
+}
+
+.details-body {
+  font-size: 0.8rem;
+  line-height: 2.1;
+  color: var(--muted);
+  letter-spacing: 0.03em;
+}
+
+.detail-items {
+  padding-top: 1rem;
+}
+
+.detail-item {
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  gap: 2rem;
+  align-items: start;
+}
+
+.detail-item:first-child { border-top: 1px solid var(--rule); }
+
+.detail-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.75rem;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  padding-top: 0.2rem;
+}
+
+.detail-content-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+  font-weight: 400;
+}
+
+.detail-content-body {
+  font-size: 0.75rem;
+  line-height: 1.9;
+  color: var(--muted);
+}
+
+/* === FOOTER CTA === */
+.footer-cta {
+  padding: 10rem 8rem;
+  background: var(--parchment);
+  text-align: center;
+  position: relative;
+}
+
+.footer-cta::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 8rem; right: 8rem;
+  height: 1px;
+  background: var(--rule);
+}
+
+.footer-wordmark {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 5rem;
+  font-weight: 300;
+  color: var(--ink);
+  letter-spacing: 0.1em;
+  margin-bottom: 1.5rem;
+  line-height: 1;
+}
+
+.footer-tagline {
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4rem;
+}
+
+.footer-phone-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.footer-phone-row {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 0.75rem;
+  gap: 1.5rem;
+  width: 380px;
+}
+
+.footer-phone-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--ink);
+  outline: none;
+  text-align: center;
+  letter-spacing: 0.08em;
+}
+
+.footer-phone-input::placeholder { color: var(--parchment); }
+
+.footer-submit {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--gold);
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  font-family: 'Didact Gothic', sans-serif;
+  transition: color 0.2s, transform 0.2s;
+  white-space: nowrap;
+  padding: 0;
+}
+
+.footer-submit:hover { color: var(--ink); transform: translateX(4px); }
+
+.footer-note {
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  opacity: 0.6;
+}
+
+.footer-meta {
+  margin-top: 6rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+/* === THANK YOU STATE === */
+.thankyou {
+  display: none;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.thankyou-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.2rem;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+
+.thankyou-sub {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+/* === ANIMATIONS === */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  nav { padding: 1.5rem 2rem; }
+
+  .hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .hero-left {
+    padding: 8rem 2.5rem 4rem;
+  }
+
+  .hero-left::after { display: none; }
+
+  .hero-right {
+    height: 55vw;
+    min-height: 300px;
+  }
+
+  .how { padding: 6rem 2.5rem; }
+  .how::before { left: 2.5rem; right: 2.5rem; }
+
+  .steps {
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+  }
+
+  .steps::before { display: none; }
+
+  .manifesto { padding: 6rem 2.5rem; }
+
+  .details {
+    padding: 6rem 2.5rem;
+    grid-template-columns: 1fr;
+    gap: 4rem;
+  }
+
+  .footer-cta { padding: 6rem 2.5rem; }
+  .footer-cta::before { left: 2.5rem; right: 2.5rem; }
+  .footer-phone-row { width: 100%; max-width: 380px; }
+  .footer-meta { flex-direction: column; gap: 1rem; align-items: center; }
+}
+
+@media (max-width: 580px) {
+  .steps { grid-template-columns: 1fr; }
+  .hero-left { padding: 7rem 1.75rem 3rem; }
+  .phone-row { max-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-wordmark">Chaperone</a>
+  <span class="nav-right">Est. 2026</span>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+
+  <div class="hero-left">
+    <span class="eyebrow">A new kind of introduction</span>
+
+    <h1 class="hero-headline">
+      We introduce<br>
+      people <em>worth</em><br>
+      meeting.
+    </h1>
+
+    <p class="hero-body">
+      No profile. No swiping. No algorithm.<br>
+      We call you. We get to know you.<br>
+      Then we make an introduction.
+    </p>
+
+    <div class="phone-form">
+      <label class="phone-label" for="hero-phone">Begin with your number</label>
+      <div class="phone-row">
+        <input
+          type="tel"
+          id="hero-phone"
+          class="phone-input"
+          placeholder="+1 (000) 000-0000"
+          autocomplete="tel"
+        >
+        <button class="phone-submit" onclick="handleSubmit('hero')">Expect a call →</button>
+      </div>
+      <p class="phone-note">We will call you within 24 hours. That is all.</p>
+      <p class="phone-note" style="margin-top:0.6rem;">By continuing you agree to our <a href="terms.html" style="color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(156,123,78,0.3);">Terms</a> and <a href="privacy.html" style="color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(156,123,78,0.3);">Privacy Policy</a>.</p>
+    </div>
+
+    <div class="thankyou" id="hero-thankyou">
+      <p class="thankyou-text">"We'll be in touch."</p>
+      <p class="thankyou-sub">Your chaperone will call shortly</p>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="vision-frame">
+      <div class="vision-inner">
+        <!-- Abstract couple illustration — SVG -->
+        <svg class="couple-svg" viewBox="0 0 380 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Background wash -->
+          <rect width="380" height="420" fill="#EDE4D6"/>
+
+          <!-- Soft light pool -->
+          <ellipse cx="190" cy="200" rx="160" ry="140" fill="rgba(156,123,78,0.06)"/>
+
+          <!-- Figure Left — warm silhouette -->
+          <ellipse cx="130" cy="148" rx="28" ry="28" fill="rgba(156,123,78,0.18)" stroke="rgba(156,123,78,0.35)" stroke-width="0.5"/>
+          <!-- body -->
+          <path d="M102 200 Q110 170 130 162 Q150 170 158 200 L158 310 Q144 318 130 318 Q116 318 102 310 Z" fill="rgba(156,123,78,0.12)" stroke="rgba(156,123,78,0.25)" stroke-width="0.5"/>
+          <!-- arm reaching -->
+          <path d="M155 230 Q180 218 200 222" stroke="rgba(156,123,78,0.3)" stroke-width="1" fill="none" stroke-linecap="round"/>
+
+          <!-- Figure Right — cooler silhouette -->
+          <ellipse cx="250" cy="148" rx="28" ry="28" fill="rgba(92,56,38,0.12)" stroke="rgba(92,56,38,0.2)" stroke-width="0.5"/>
+          <!-- body -->
+          <path d="M222 200 Q230 170 250 162 Q270 170 278 200 L278 310 Q264 318 250 318 Q236 318 222 310 Z" fill="rgba(92,56,38,0.08)" stroke="rgba(92,56,38,0.15)" stroke-width="0.5"/>
+          <!-- arm reaching -->
+          <path d="M225 230 Q200 218 180 222" stroke="rgba(92,56,38,0.2)" stroke-width="1" fill="none" stroke-linecap="round"/>
+
+          <!-- Hands almost touching — the moment -->
+          <circle cx="190" cy="223" r="4" fill="rgba(156,123,78,0.4)"/>
+          <circle cx="192" cy="223" r="2" fill="rgba(156,123,78,0.6)"/>
+
+          <!-- Decorative botanical — left -->
+          <path d="M40 380 Q55 340 70 300 Q60 320 45 330" stroke="rgba(156,123,78,0.2)" stroke-width="0.75" fill="none"/>
+          <path d="M70 300 Q80 270 95 240" stroke="rgba(156,123,78,0.15)" stroke-width="0.75" fill="none"/>
+          <ellipse cx="58" cy="322" rx="12" ry="8" fill="rgba(156,123,78,0.08)" transform="rotate(-30 58 322)"/>
+          <ellipse cx="82" cy="270" rx="10" ry="7" fill="rgba(156,123,78,0.06)" transform="rotate(-50 82 270)"/>
+
+          <!-- Botanical — right -->
+          <path d="M340 380 Q325 340 310 300 Q320 320 335 330" stroke="rgba(156,123,78,0.2)" stroke-width="0.75" fill="none"/>
+          <path d="M310 300 Q300 270 285 240" stroke="rgba(156,123,78,0.15)" stroke-width="0.75" fill="none"/>
+          <ellipse cx="322" cy="322" rx="12" ry="8" fill="rgba(156,123,78,0.08)" transform="rotate(30 322 322)"/>
+          <ellipse cx="298" cy="270" rx="10" ry="7" fill="rgba(156,123,78,0.06)" transform="rotate(50 298 270)"/>
+
+          <!-- Ornamental arch top -->
+          <path d="M80 60 Q190 20 300 60" stroke="rgba(156,123,78,0.2)" stroke-width="0.5" fill="none"/>
+          <path d="M90 68 Q190 30 290 68" stroke="rgba(156,123,78,0.1)" stroke-width="0.5" fill="none"/>
+
+          <!-- Fine rule at base -->
+          <line x1="60" y1="350" x2="320" y2="350" stroke="rgba(156,123,78,0.15)" stroke-width="0.5"/>
+
+          <!-- Small ornament center bottom -->
+          <text x="190" y="375" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="rgba(156,123,78,0.35)" letter-spacing="8">✦</text>
+        </svg>
+
+        <div class="vision-caption">
+          <strong>A vision of you, together</strong>
+          Before you speak, we imagine what's possible.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="how">
+  <p class="section-label">How it works</p>
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-number">I</div>
+      <h3 class="step-title">The conversation</h3>
+      <p class="step-body">We call you. No forms, no profile. Just a conversation where we learn who you are — how you think, what you love, what you're ready for.</p>
+    </div>
+
+    <div class="step">
+      <div class="step-number">II</div>
+      <h3 class="step-title">The introduction</h3>
+      <p class="step-body">When we find someone worth meeting, we send a quiet message. "Would you like to meet Jane?" You say yes or no. No pressure. No cost yet.</p>
+    </div>
+
+    <div class="step">
+      <div class="step-number">III</div>
+      <h3 class="step-title">The arrangement</h3>
+      <p class="step-body">We handle everything. We find a time that works for both of you, send a calendar invitation, and remind you the morning of.</p>
+    </div>
+
+    <div class="step">
+      <div class="step-number">IV</div>
+      <h3 class="step-title">The call</h3>
+      <p class="step-body">A private video call, the three of you. Your chaperone is present — not intrusive, but there. Helping you see the best in each other.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== MANIFESTO ===== -->
+<section class="manifesto">
+  <p class="manifesto-quote">
+    "Dating apps optimise for <em>engagement.</em><br>
+    We optimise for <em>the right moment</em> —<br>
+    the one that changes everything."
+  </p>
+  <p class="manifesto-attr">— Chaperone, 2026</p>
+</section>
+
+<!-- ===== DETAILS ===== -->
+<section class="details">
+
+  <div class="details-left">
+    <p class="section-label">The philosophy</p>
+    <h2 class="details-headline">Quality over<br>quantity.<br>Always.</h2>
+    <p class="details-body">
+      We will never show you a thousand profiles. We may introduce you to one person a month — perhaps two. Each introduction is considered, researched, and made with care.<br><br>
+      You are not a user. You are a member.
+    </p>
+  </div>
+
+  <div class="detail-items">
+
+    <div class="detail-item">
+      <span class="detail-num">01</span>
+      <div>
+        <p class="detail-content-title">Your chaperone knows both of you</p>
+        <p class="detail-content-body">Every member has been personally interviewed. When your chaperone joins your call, they bring genuine knowledge of who you both are — not guesswork.</p>
+      </div>
+    </div>
+
+    <div class="detail-item">
+      <span class="detail-num">02</span>
+      <div>
+        <p class="detail-content-title">No photographs before the call</p>
+        <p class="detail-content-body">We believe first impressions belong to the voice, not the face. Instead, we offer something richer — an AI-imagined portrait of a future you haven't had yet.</p>
+      </div>
+    </div>
+
+    <div class="detail-item">
+      <span class="detail-num">03</span>
+      <div>
+        <p class="detail-content-title">You only pay when you meet</p>
+        <p class="detail-content-body">Waiting costs nothing. Saying no costs nothing. You pay once, when a date call happens. That is our only business model.</p>
+      </div>
+    </div>
+
+    <div class="detail-item">
+      <span class="detail-num">04</span>
+      <div>
+        <p class="detail-content-title">A debrief, just for you</p>
+        <p class="detail-content-body">After every call, your chaperone speaks with you privately. What they noticed. What felt real. What might be worth exploring.</p>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- ===== FOOTER CTA ===== -->
+<section class="footer-cta">
+
+  <h2 class="footer-wordmark">Chaperone</h2>
+  <p class="footer-tagline">chaperone.love — Private introductions since 2026</p>
+
+  <div class="footer-phone-form" id="footer-form">
+    <div class="footer-phone-row">
+      <input
+        type="tel"
+        id="footer-phone"
+        class="footer-phone-input"
+        placeholder="+1 (000) 000-0000"
+        autocomplete="tel"
+      >
+      <button class="footer-submit" onclick="handleSubmit('footer')">Begin →</button>
+    </div>
+    <p class="footer-note">We will call you within 24 hours. That is all.</p>
+    <p class="footer-note" style="margin-top:0.4rem;">By continuing you agree to our <a href="terms.html" style="color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(156,123,78,0.3);">Terms</a> and <a href="privacy.html" style="color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(156,123,78,0.3);">Privacy Policy</a>.</p>
+  </div>
+
+  <div class="thankyou" id="footer-thankyou">
+    <p class="thankyou-text">"We'll be in touch."</p>
+    <p class="thankyou-sub">Your chaperone will call shortly</p>
+  </div>
+
+  <div class="footer-meta">
+    <span>© 2026 Chaperone</span>
+    <span>chaperone.love</span>
+  </div>
+
+</section>
+
+<script>
+// === PHONE FORMATTING ===
+document.querySelectorAll('input[type="tel"]').forEach(input => {
+  input.addEventListener('input', function() {
+    let v = this.value.replace(/\D/g, '');
+    if (v.length > 10) v = v.slice(0, 10);
+    let formatted = '';
+    if (v.length > 0) formatted = '+1 (' + v.slice(0, 3);
+    if (v.length >= 4) formatted += ') ' + v.slice(3, 6);
+    if (v.length >= 7) formatted += '-' + v.slice(6, 10);
+    this.value = formatted;
+  });
+});
+
+// === SUBMIT ===
+function handleSubmit(section) {
+  const input = document.getElementById(section + '-phone');
+  const val = input.value.trim();
+  if (val.replace(/\D/g, '').length < 10) {
+    input.style.borderBottom = '1px solid #c0392b';
+    setTimeout(() => input.style.borderBottom = '', 1200);
+    return;
+  }
+  // Hide form, show thank you
+  if (section === 'hero') {
+    document.querySelector('.phone-form').style.display = 'none';
+    document.getElementById('hero-thankyou').style.display = 'block';
+  } else {
+    document.getElementById('footer-form').style.display = 'none';
+    document.getElementById('footer-thankyou').style.display = 'block';
+  }
+  // In production: POST to your backend here
+  console.log('Number submitted:', val);
+}
+
+// Also handle Enter key
+document.querySelectorAll('input[type="tel"]').forEach(input => {
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      const section = this.id.includes('footer') ? 'footer' : 'hero';
+      handleSubmit(section);
+    }
+  });
+});
+
+// === SCROLL ANIMATIONS ===
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.step, .manifesto-quote, .manifesto-attr').forEach(el => {
+  observer.observe(el);
+});
+</script>
+
+</body>
+</html>
