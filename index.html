@@ -936,24 +936,56 @@ document.querySelectorAll('input[type="tel"]').forEach(input => {
 });
 
 // === SUBMIT ===
-function handleSubmit(section) {
+// Replace this URL with your Cloudflare Worker URL after deploying
+const WORKER_URL = '/submit';
+
+async function handleSubmit(section) {
   const input = document.getElementById(section + '-phone');
   const val = input.value.trim();
+
   if (val.replace(/\D/g, '').length < 10) {
     input.style.borderBottom = '1px solid #c0392b';
     setTimeout(() => input.style.borderBottom = '', 1200);
     return;
   }
-  // Hide form, show thank you
-  if (section === 'hero') {
-    document.querySelector('.phone-form').style.display = 'none';
-    document.getElementById('hero-thankyou').style.display = 'block';
-  } else {
-    document.getElementById('footer-form').style.display = 'none';
-    document.getElementById('footer-thankyou').style.display = 'block';
+
+  // Disable button while submitting
+  const btn = section === 'hero'
+    ? document.querySelector('.phone-submit')
+    : document.querySelector('.footer-submit');
+  const original = btn.textContent;
+  btn.textContent = '...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: val }),
+    });
+
+    if (!res.ok) throw new Error('Server error');
+
+    // Success — show thank you
+    if (section === 'hero') {
+      document.querySelector('.phone-form').style.display = 'none';
+      document.getElementById('hero-thankyou').style.display = 'block';
+    } else {
+      document.getElementById('footer-form').style.display = 'none';
+      document.getElementById('footer-thankyou').style.display = 'block';
+    }
+
+  } catch {
+    // Restore button, show error
+    btn.textContent = original;
+    btn.disabled = false;
+    input.style.borderBottom = '1px solid #c0392b';
+    input.placeholder = 'Something went wrong — try again';
+    setTimeout(() => {
+      input.style.borderBottom = '';
+      input.placeholder = '+1 (000) 000-0000';
+    }, 2500);
   }
-  // In production: POST to your backend here
-  console.log('Number submitted:', val);
 }
 
 // Also handle Enter key
