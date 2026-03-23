@@ -640,13 +640,15 @@ nav {
 @media (max-width: 900px) {
   nav { padding: 1.5rem 2rem; }
 
+  .nav-right { display: none; }
+
   .hero {
     grid-template-columns: 1fr;
     min-height: auto;
   }
 
   .hero-left {
-    padding: 8rem 2.5rem 4rem;
+    padding: 7rem 1.75rem 4rem;
   }
 
   .hero-left::after { display: none; }
@@ -656,8 +658,8 @@ nav {
     min-height: 300px;
   }
 
-  .how { padding: 6rem 2.5rem; }
-  .how::before { left: 2.5rem; right: 2.5rem; }
+  .how { padding: 6rem 1.75rem; overflow: hidden; }
+  .how::before { left: 1.75rem; right: 1.75rem; }
 
   .steps {
     grid-template-columns: 1fr 1fr;
@@ -666,24 +668,37 @@ nav {
 
   .steps::before { display: none; }
 
-  .manifesto { padding: 6rem 2.5rem; }
+  .manifesto { padding: 6rem 1.75rem; overflow: hidden; }
 
   .details {
-    padding: 6rem 2.5rem;
+    padding: 6rem 1.75rem;
     grid-template-columns: 1fr;
     gap: 4rem;
+    overflow: hidden;
   }
 
-  .footer-cta { padding: 6rem 2.5rem; }
-  .footer-cta::before { left: 2.5rem; right: 2.5rem; }
+  .footer-cta { padding: 6rem 1.75rem; overflow: hidden; }
+  .footer-cta::before { left: 1.75rem; right: 1.75rem; }
+
+  .footer-wordmark { font-size: clamp(2.5rem, 12vw, 5rem); }
+
   .footer-phone-row { width: 100%; max-width: 380px; }
   .footer-meta { flex-direction: column; gap: 1rem; align-items: center; }
 }
 
 @media (max-width: 580px) {
   .steps { grid-template-columns: 1fr; }
-  .hero-left { padding: 7rem 1.75rem 3rem; }
+  .hero-left { padding: 7rem 1.25rem 3rem; }
   .phone-row { max-width: 100%; }
+  .phone-note { font-size: 0.6rem; letter-spacing: 0.05em; }
+  .hero-headline { font-size: clamp(2.8rem, 10vw, 4rem); }
+  .manifesto-quote { font-size: clamp(1.5rem, 5.5vw, 2.5rem); }
+  .details-headline { font-size: clamp(1.8rem, 7vw, 2.5rem); }
+  .footer-wordmark { font-size: clamp(2rem, 10vw, 4rem); }
+  .how { padding: 5rem 1.25rem; }
+  .manifesto { padding: 5rem 1.25rem; }
+  .details { padding: 5rem 1.25rem; }
+  .footer-cta { padding: 5rem 1.25rem; }
 }
 </style>
 </head>
@@ -925,7 +940,9 @@ nav {
 // === PHONE FORMATTING ===
 document.querySelectorAll('input[type="tel"]').forEach(input => {
   input.addEventListener('input', function() {
+    // Strip everything non-digit, then strip leading 1 if present
     let v = this.value.replace(/\D/g, '');
+    if (v.startsWith('1')) v = v.slice(1);
     if (v.length > 10) v = v.slice(0, 10);
     let formatted = '';
     if (v.length > 0) formatted = '+1 (' + v.slice(0, 3);
