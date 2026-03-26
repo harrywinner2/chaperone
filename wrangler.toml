@@ -1,0 +1,3 @@
+[vars]
+AIRTABLE_BASE_ID = "id"
+AIRTABLE_API_KEY = "12345"
