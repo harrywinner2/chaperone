@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="32" fill="#1C1510"/>
+  
+  <!-- Inner decorative circle -->
+  <circle cx="32" cy="32" r="28" fill="none" stroke="#9C7B4E" stroke-width="0.5" opacity="0.3"/>
+  
+  <!-- Stylized "C" monogram with elegant curves -->
+  <path d="M 42 32 Q 42 24 36 20 Q 30 16 24 20 Q 18 24 18 32 Q 18 40 24 44 Q 28 47 32 47" 
+        stroke="#9C7B4E" 
+        stroke-width="2.5" 
+        fill="none" 
+        stroke-linecap="round"/>
+  
+  <!-- Inner accent line mimicking the C -->
+  <path d="M 39 32 Q 39 26 35 23 Q 31 20 27 23 Q 23 26 23 32 Q 23 38 27 41 Q 30 43 33 43" 
+        stroke="#C4A06A" 
+        stroke-width="1" 
+        fill="none" 
+        stroke-linecap="round"
+        opacity="0.6"/>
+  
+  <!-- Small decorative diamond/ornament at opening -->
+  <circle cx="34" cy="47" r="1.5" fill="#9C7B4E"/>
+  <circle cx="34" cy="47" r="2.5" fill="none" stroke="#C4A06A" stroke-width="0.5" opacity="0.4"/>
+  
+  <!-- Subtle dots for vintage touch -->
+  <circle cx="32" cy="14" r="0.8" fill="#9C7B4E" opacity="0.5"/>
+  <circle cx="32" cy="50" r="0.8" fill="#9C7B4E" opacity="0.5"/>
+  <circle cx="14" cy="32" r="0.8" fill="#9C7B4E" opacity="0.5"/>
+</svg>
