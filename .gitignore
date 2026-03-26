@@ -1,6 +1,16 @@
-# wrangler files
-.wrangler
-.dev.vars*
-!.dev.vars.example
-.env*
-!.env.example
+# Environment variables
+.dev.vars
+
+# Template folder (reference only, not needed for deployment)
+template/
+
+# Node modules (if you add any npm packages)
+node_modules/
+
+# Wrangler output
+.wrangler/
+wrangler.toml.lock
+
+# OS files
+.DS_Store
+Thumbs.db
