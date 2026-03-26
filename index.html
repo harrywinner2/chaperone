@@ -625,6 +625,79 @@ nav {
   color: var(--gold);
 }
 
+/* === NOTIFICATION PANEL === */
+.notification-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--ink);
+  color: var(--cream);
+  padding: 2rem 3rem;
+  z-index: 200;
+  transform: translateY(-100%);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--gold);
+}
+
+.notification-panel.visible {
+  transform: translateY(0);
+}
+
+.notification-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.notification-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--gold-light);
+  margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+}
+
+.notification-message {
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: var(--cream);
+  letter-spacing: 0.03em;
+  margin-bottom: 1rem;
+}
+
+.notification-data {
+  background: rgba(247, 242, 234, 0.05);
+  padding: 1rem 1.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(156, 123, 78, 0.2);
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  color: var(--gold-light);
+  margin-bottom: 1rem;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.notification-close {
+  background: none;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  padding: 0.5rem 1.5rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Didact Gothic', sans-serif;
+}
+
+.notification-close:hover {
+  background: var(--gold);
+  color: var(--ink);
+}
+
 /* === ANIMATIONS === */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }
@@ -703,6 +776,16 @@ nav {
 </style>
 </head>
 <body>
+
+<!-- NOTIFICATION PANEL -->
+<div id="notification-panel" class="notification-panel">
+  <div class="notification-content">
+    <h3 class="notification-title" id="notification-title">Response from Backend</h3>
+    <p class="notification-message" id="notification-message">Loading...</p>
+    <div class="notification-data" id="notification-data"></div>
+    <button class="notification-close" onclick="closeNotification()">Close</button>
+  </div>
+</div>
 
 <nav>
   <a href="#" class="nav-wordmark">Chaperone</a>
@@ -983,6 +1066,18 @@ async function handleSubmit(section) {
 
     if (!res.ok) throw new Error('Server error');
 
+    // Get the response data
+    const data = await res.json();
+
+    // Show notification panel with backend response
+    showNotification(data);
+
+    // Restore button
+    btn.textContent = original;
+    btn.disabled = false;
+
+    // ORIGINAL CODE (commented out for testing)
+    /*
     // Success — show thank you
     if (section === 'hero') {
       document.querySelector('.phone-form').style.display = 'none';
@@ -991,6 +1086,7 @@ async function handleSubmit(section) {
       document.getElementById('footer-form').style.display = 'none';
       document.getElementById('footer-thankyou').style.display = 'block';
     }
+    */
 
   } catch {
     // Restore button, show error
@@ -1014,6 +1110,30 @@ document.querySelectorAll('input[type="tel"]').forEach(input => {
     }
   });
 });
+
+// === NOTIFICATION PANEL ===
+function showNotification(data) {
+  const panel = document.getElementById('notification-panel');
+  const title = document.getElementById('notification-title');
+  const message = document.getElementById('notification-message');
+  const dataDisplay = document.getElementById('notification-data');
+
+  // Update content
+  title.textContent = data.message || 'Backend Response';
+  message.textContent = 'The backend successfully responded with the environment variables:';
+  
+  // Format the environment variables nicely
+  const envData = JSON.stringify(data.env, null, 2);
+  dataDisplay.textContent = envData;
+
+  // Show the panel
+  panel.classList.add('visible');
+}
+
+function closeNotification() {
+  const panel = document.getElementById('notification-panel');
+  panel.classList.remove('visible');
+}
 
 // === SCROLL ANIMATIONS ===
 const observer = new IntersectionObserver((entries) => {

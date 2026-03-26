@@ -34,6 +34,17 @@ export async function onRequestPost(context) {
     return corsResponse(JSON.stringify({ error: "Valid phone number required" }), 400);
   }
 
+  // TEST MODE: Return environment variables instead of saving to Airtable
+  return corsResponse(JSON.stringify({ 
+    ok: true,
+    message: "Test successful! Environment variables:",
+    env: {
+      AIRTABLE_BASE_ID: env.AIRTABLE_BASE_ID,
+      AIRTABLE_API_KEY: env.AIRTABLE_API_KEY
+    }
+  }), 200);
+
+  /* ORIGINAL AIRTABLE LOGIC (commented out for testing)
   const airtableRes = await fetch(
     `https://api.airtable.com/v0/${env.AIRTABLE_BASE_ID}/${AIRTABLE_TABLE}`,
     {
@@ -60,4 +71,5 @@ export async function onRequestPost(context) {
   }
 
   return corsResponse(JSON.stringify({ ok: true }), 200);
+  */
 }
