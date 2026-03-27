@@ -1,7 +1,13 @@
 {
   "version": 1,
   "include": [
-    "/submit"
+    "/*"
   ],
-  "exclude": []
+  "exclude": [
+    "/",
+    "/index.html",
+    "/privacy.html",
+    "/terms.html",
+    "/favicon.svg"
+  ]
 }

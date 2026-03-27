@@ -34,6 +34,16 @@ export async function onRequestPost(context) {
     return corsResponse(JSON.stringify({ error: "Valid phone number required" }), 400);
   }
 
+  // testing (instead of {ok:true})
+  return corsResponse(JSON.stringify({ 
+    ok: true,
+    debug: {
+      phone: body.phone,
+      base_id: env.AIRTABLE_BASE_ID,
+      api_key: env.AIRTABLE_API_KEY ? "SET" : "NOT SET"
+    }
+  }), 200);
+
   // Save to Airtable
   const airtableRes = await fetch(
     `https://api.airtable.com/v0/${env.AIRTABLE_BASE_ID}/${AIRTABLE_TABLE}`,

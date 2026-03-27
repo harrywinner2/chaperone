@@ -1077,8 +1077,6 @@ async function handleSubmit(section) {
     btn.textContent = original;
     btn.disabled = false;
 
-    // ORIGINAL CODE (commented out for testing)
-    /*
     // Success — show thank you
     if (section === 'hero') {
       document.querySelector('.phone-form').style.display = 'none';
@@ -1087,7 +1085,6 @@ async function handleSubmit(section) {
       document.getElementById('footer-form').style.display = 'none';
       document.getElementById('footer-thankyou').style.display = 'block';
     }
-    */
 
   } catch {
     // Restore button, show error
@@ -1119,13 +1116,31 @@ function showNotification(data) {
   const message = document.getElementById('notification-message');
   const dataDisplay = document.getElementById('notification-data');
 
-  // Update content
-  title.textContent = data.message || 'Backend Response';
-  message.textContent = 'The backend successfully responded with the environment variables:';
-  
-  // Format the environment variables nicely
-  const envData = JSON.stringify(data.env, null, 2);
-  dataDisplay.textContent = envData;
+  // Check if it's an error or success
+  if (data.error) {
+    // Error case
+    title.textContent = 'Submission Failed';
+    message.textContent = data.error;
+    dataDisplay.style.display = 'none';
+  } else if (data.ok) {
+    // Success case
+    title.textContent = 'Thank You!';
+    message.textContent = 'Your number has been submitted successfully. We\'ll call you within 24 hours.';
+    
+    // Show debug info if present
+    if (data.debug) {
+      dataDisplay.textContent = 'Debug Info:\n' + JSON.stringify(data.debug, null, 2);
+      dataDisplay.style.display = 'block';
+    } else {
+      dataDisplay.style.display = 'none';
+    }
+  } else {
+    // Fallback for unexpected response format
+    title.textContent = 'Response Received';
+    message.textContent = 'The backend responded:';
+    dataDisplay.textContent = JSON.stringify(data, null, 2);
+    dataDisplay.style.display = 'block';
+  }
 
   // Show the panel
   panel.classList.add('visible');
