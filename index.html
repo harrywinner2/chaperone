@@ -1046,6 +1046,22 @@ async function handleSubmit(section) {
 
   if (val.replace(/\D/g, '').length < 10) {
     input.style.borderBottom = '1px solid #c0392b';
+    
+    // Log validation error to console
+    console.warn('[Chaperone Validation]', {
+      errorType: 'PHONE_VALIDATION_ERROR',
+      enteredValue: val.replace(/\d/g, '*'), // Fully masked
+      length: val.replace(/\D/g, '').length,
+      timestamp: new Date().toISOString()
+    });
+    
+    showNotification({
+      error: 'Please enter a valid 10-digit phone number',
+      debugInfo: {
+        errorType: 'PHONE_VALIDATION_ERROR',
+        timestamp: new Date().toISOString()
+      }
+    });
     setTimeout(() => input.style.borderBottom = '', 1200);
     return;
   }
@@ -1065,36 +1081,89 @@ async function handleSubmit(section) {
       body: JSON.stringify({ phone: val }),
     });
 
-    if (!res.ok) throw new Error('Server error');
+    // Always try to parse the response, even on error
+    let data;
+    try {
+      data = await res.json();
+    } catch (parseError) {
+      // If JSON parsing fails, create error object
+      data = {
+        error: `Server error (${res.status}): Unable to process response`,
+        debugInfo: {
+          errorType: 'RESPONSE_PARSE_ERROR',
+          statusCode: res.status,
+          parseError: parseError.message,
+          timestamp: new Date().toISOString()
+        }
+      };
+    }
 
-    // Get the response data
-    const data = await res.json();
+    // Log technical details to browser console for debugging
+    if (data.debugInfo) {
+      console.error('[Chaperone Submit Error]', {
+        userMessage: data.error,
+        technical: data.debugInfo,
+        httpStatus: res.status,
+        submittedPhone: val.replace(/\d(?=\d{4})/g, '*') // Partially masked for privacy
+      });
+    } else if (data.ok) {
+      console.log('[Chaperone Submit Success]', {
+        timestamp: new Date().toISOString(),
+        submittedPhone: val.replace(/\d(?=\d{4})/g, '*')
+      });
+    }
 
-    // Show notification panel with backend response
+    // Show notification panel with backend response (success or error)
     showNotification(data);
 
     // Restore button
     btn.textContent = original;
     btn.disabled = false;
 
-    // Success — show thank you
-    if (section === 'hero') {
-      document.querySelector('.phone-form').style.display = 'none';
-      document.getElementById('hero-thankyou').style.display = 'block';
+    // Only show thank you on actual success
+    if (res.ok && data.ok) {
+      if (section === 'hero') {
+        document.querySelector('.phone-form').style.display = 'none';
+        document.getElementById('hero-thankyou').style.display = 'block';
+      } else {
+        document.getElementById('footer-form').style.display = 'none';
+        document.getElementById('footer-thankyou').style.display = 'block';
+      }
     } else {
-      document.getElementById('footer-form').style.display = 'none';
-      document.getElementById('footer-thankyou').style.display = 'block';
+      // On error, also show visual feedback on input
+      input.style.borderBottom = '1px solid #c0392b';
+      setTimeout(() => {
+        input.style.borderBottom = '';
+      }, 2500);
     }
 
-  } catch {
-    // Restore button, show error
+  } catch (networkError) {
+    // Network error - no response from server at all
     btn.textContent = original;
     btn.disabled = false;
     input.style.borderBottom = '1px solid #c0392b';
-    input.placeholder = 'Something went wrong — try again';
+    
+    // Log to console for debugging
+    console.error('[Chaperone Network Error]', {
+      errorType: 'CLIENT_NETWORK_ERROR',
+      message: networkError.message,
+      stack: networkError.stack,
+      timestamp: new Date().toISOString(),
+      submittedPhone: val.replace(/\d(?=\d{4})/g, '*')
+    });
+    
+    // Always show notification, even for network errors
+    showNotification({
+      error: 'Network error: Unable to reach the server. Please check your internet connection and try again.',
+      debugInfo: {
+        errorType: 'CLIENT_NETWORK_ERROR',
+        errorMessage: networkError.message,
+        timestamp: new Date().toISOString()
+      }
+    });
+    
     setTimeout(() => {
       input.style.borderBottom = '';
-      input.placeholder = '+1 (000) 000-0000';
     }, 2500);
   }
 }
