@@ -7,8 +7,8 @@ pages_build_output_dir = "."
 # This configuration serves your static HTML files and uses the /functions directory for serverless functions
 
 [vars]
-AIRTABLE_BASE_ID = "id"
-AIRTABLE_API_KEY = "12345"
+AIRTABLE_BASE_ID = "appkmuVR7FfPVBCWK/tblOVMucWTnfrJNyk"
+AIRTABLE_API_KEY = "patBwDQd456xEuRWd.777133ccdc4011299ddc1feed64760ad9bd7d1737e1cf0ec29d3406bda376421"
 
 #[env.production]
 # Environment variables are set in Cloudflare Pages dashboard

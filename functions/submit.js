@@ -1,4 +1,4 @@
-const AIRTABLE_TABLE = "Members";
+const AIRTABLE_TABLE = "Visitors";
 
 function corsResponse(body, status) {
   return new Response(body, {
@@ -57,7 +57,7 @@ export async function onRequestPost(context) {
         fields: {
           "Phone":     phone,
           "Submitted": new Date().toISOString(),
-          "Status":    "New",
+          "Status":    "Pending",
           "Source":    request.headers.get("Referer") || "direct",
         },
       }),
